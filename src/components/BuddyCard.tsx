@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Buddy } from '../types';
 import { BUDDY_PROFILES } from '../data/seedData';
-import { Users, ArrowLeftRight, CheckCircle, MapPin, Sparkles, X } from 'lucide-react';
+import { Users, ArrowLeftRight, CheckCircle, MapPin, Sparkles, X, Heart } from 'lucide-react';
 
 interface BuddyCardProps {
   currentBuddy: Buddy;
@@ -14,16 +14,27 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
 }) => {
   const [showSwitchModal, setShowSwitchModal] = useState(false);
 
+  // Close switch modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showSwitchModal) {
+        setShowSwitchModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSwitchModal]);
+
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-xs transition-all">
+    <div className="duo-card p-5">
       {/* Simulation Banner Notice */}
-      <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-stone-100 text-xs">
-        <div className="flex items-center gap-1.5 font-semibold text-emerald-800">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>SIMULATED DEMO PARTNER</span>
+      <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b-2 border-[#f0f0f0] text-xs">
+        <div className="flex items-center gap-1.5 font-extrabold text-[#46a302]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#58cc02] animate-ping" />
+          <span className="uppercase tracking-wide text-[11px]">DEMO LANGUAGE BUDDY</span>
         </div>
-        <span className="text-[11px] text-stone-500">
-          Scripted reciprocal demo
+        <span className="text-[11px] font-bold text-[#afafaf]">
+          Deterministic scripted exchange
         </span>
       </div>
 
@@ -31,25 +42,29 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3.5">
           <div
-            className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl border shadow-inner ${currentBuddy.avatarBg}`}
+            className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl border-2 border-b-4 shadow-xs relative ${
+              currentBuddy.id === 'jun'
+                ? 'bg-[#e7f7ff] border-[#1899d6] text-[#1899d6]'
+                : currentBuddy.id === 'minho'
+                ? 'bg-[#f3e8ff] border-[#a559d9] text-[#a559d9]'
+                : 'bg-[#e5f8d0] border-[#46a302] text-[#46a302]'
+            }`}
           >
             <span>{currentBuddy.avatarEmoji}</span>
+            <span className="absolute -bottom-1 -right-1 text-base">{currentBuddy.flag}</span>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold text-stone-900">
+              <h3 className="text-xl font-black text-[#4b4b4b]">
                 {currentBuddy.name}
               </h3>
-              <span className="text-stone-400">·</span>
-              <span className="text-xs font-medium text-stone-600">
+              <span className="text-[#afafaf] font-bold">·</span>
+              <span className="text-xs font-bold text-[#777777]">
                 {currentBuddy.age} yrs
               </span>
-              <span title={currentBuddy.country} className="text-sm">
-                {currentBuddy.flag}
-              </span>
             </div>
-            <div className="flex items-center gap-1 text-xs text-stone-500 mt-0.5">
-              <MapPin className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+            <div className="flex items-center gap-1 text-xs font-bold text-[#afafaf] mt-0.5">
+              <MapPin className="w-3.5 h-3.5 text-[#afafaf] shrink-0" />
               <span>
                 {currentBuddy.city}, {currentBuddy.country}
               </span>
@@ -59,66 +74,71 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
 
         {/* Switch Buddy Button */}
         <button
+          type="button"
           onClick={() => setShowSwitchModal(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-xl border border-emerald-200 transition-colors cursor-pointer"
+          className="duo-btn-white px-3.5 py-1.5 text-xs font-extrabold flex items-center gap-1.5 shrink-0"
           title="Switch to another demo buddy"
         >
-          <Users className="w-3.5 h-3.5" />
-          <span>Switch Buddy</span>
+          <Users className="w-4 h-4 text-[#1cb0f6]" />
+          <span>Switch Pal</span>
         </button>
       </div>
 
       {/* Reciprocal Exchange Box */}
-      <div className="mt-4 p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
-        <div className="flex items-center justify-between text-xs font-medium text-stone-600 mb-2">
-          <div className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="font-bold text-emerald-800 uppercase tracking-wider text-[11px]">
-              GOOD MATCH
+      <div className="mt-4 p-4 rounded-2xl bg-[#f7f7f7] border-2 border-b-4 border-[#e5e5e5]">
+        <div className="flex items-center justify-between text-xs font-bold mb-2.5">
+          <div className="flex items-center gap-1.5 text-[#58cc02]">
+            <Sparkles className="w-4 h-4 fill-[#58cc02]" />
+            <span className="font-black uppercase tracking-wider text-[11px] text-[#46a302]">
+              GOOD RECIPROCAL MATCH
             </span>
           </div>
-          <span className="text-[11px] text-stone-500">
-            Reciprocal Exchange
+          <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white border border-[#e5e5e5] text-[#1cb0f6]">
+            {currentBuddy.level}
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-center text-xs">
-          <div className="p-2 rounded-lg bg-white border border-stone-200 shadow-2xs">
-            <span className="block text-[10px] uppercase font-bold text-stone-400">
-              You Practice
+          <div className="p-3 rounded-xl bg-white border-2 border-b-4 border-[#e5e5e5]">
+            <span className="block text-[10px] uppercase font-black tracking-wider text-[#afafaf]">
+              You Speak & Practice
             </span>
-            <span className="font-bold text-stone-900 text-sm">
-              Español (Spanish)
+            <span className="font-extrabold text-[#4b4b4b] text-sm block mt-0.5">
+              {currentBuddy.id === 'jun'
+                ? 'Mandarin Chinese'
+                : currentBuddy.id === 'minho'
+                ? 'Korean (한국어)'
+                : 'Español (Spanish)'}
             </span>
           </div>
-          <div className="p-2 rounded-lg bg-white border border-stone-200 shadow-2xs">
-            <span className="block text-[10px] uppercase font-bold text-stone-400">
-              {currentBuddy.name} Practices
+          <div className="p-3 rounded-xl bg-white border-2 border-b-4 border-[#e5e5e5]">
+            <span className="block text-[10px] uppercase font-black tracking-wider text-[#afafaf]">
+              {currentBuddy.name} Speaks & Practices
             </span>
-            <span className="font-bold text-stone-900 text-sm">
+            <span className="font-extrabold text-[#4b4b4b] text-sm block mt-0.5">
               English
             </span>
           </div>
         </div>
 
-        <div className="mt-2.5 flex items-center justify-center gap-2 text-xs text-stone-600 text-center px-1">
-          <ArrowLeftRight className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-          <p className="text-[11px] leading-tight">
-            You write in Spanish · {currentBuddy.name} responds in English so both build fluency together!
+        <div className="mt-3 flex items-center justify-center gap-2 text-xs font-bold text-[#777777] text-center">
+          <ArrowLeftRight className="w-4 h-4 text-[#58cc02] shrink-0" />
+          <p className="text-[11px] leading-snug">
+            Reciprocal Rule: You write in their target language · {currentBuddy.name} replies in English!
           </p>
         </div>
       </div>
 
       {/* Bio & Interests */}
-      <div className="mt-3.5 text-xs space-y-2">
-        <p className="text-stone-600 leading-relaxed italic">
+      <div className="mt-4 text-xs space-y-2.5">
+        <p className="text-[#777777] font-semibold leading-relaxed italic bg-white p-2.5 rounded-xl border border-[#f0f0f0]">
           “{currentBuddy.bio}”
         </p>
         <div className="flex flex-wrap gap-1.5 pt-1">
           {currentBuddy.interests.map((interest) => (
             <span
               key={interest}
-              className="px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[11px] font-medium"
+              className="px-2.5 py-1 rounded-xl bg-[#f7f7f7] border border-[#e5e5e5] text-[#4b4b4b] text-[11px] font-extrabold"
             >
               {interest}
             </span>
@@ -133,16 +153,16 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
           onClick={() => setShowSwitchModal(false)}
         >
           <div
-            className="bg-white w-full max-w-md rounded-2xl border border-stone-200 p-5 shadow-xl space-y-4"
+            className="duo-card w-full max-w-md p-6 shadow-2xl space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+            <div className="flex items-center justify-between pb-3 border-b-2 border-[#f0f0f0]">
               <div>
-                <h4 className="text-base font-bold text-stone-900">
-                  Switch Demo Buddy
+                <h4 className="text-lg font-black text-[#4b4b4b]">
+                  Choose Your Demo Buddy
                 </h4>
-                <p className="text-xs text-stone-500">
-                  Choose a fictional partner to practice reciprocal exchange.
+                <p className="text-xs font-bold text-[#afafaf]">
+                  Practice with Camila (Mexico), Jun (China), or Minho (Korea).
                 </p>
               </div>
               <button
@@ -152,15 +172,15 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
                   e.stopPropagation();
                   setShowSwitchModal(false);
                 }}
-                className="w-10 h-10 rounded-xl text-stone-400 hover:text-stone-800 hover:bg-stone-100 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                className="w-10 h-10 rounded-xl text-[#afafaf] hover:text-[#4b4b4b] hover:bg-[#f7f7f7] flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 title="Close modal (Esc)"
                 aria-label="Close modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6 stroke-[2.5]" />
               </button>
             </div>
 
-            <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+            <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
               {BUDDY_PROFILES.map((buddy) => {
                 const isSelected = buddy.id === currentBuddy.id;
                 return (
@@ -170,35 +190,41 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
                       onSelectBuddy(buddy);
                       setShowSwitchModal(false);
                     }}
-                    className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all flex items-center justify-between gap-3 ${
+                    className={`p-4 rounded-2xl border-2 border-b-4 text-left cursor-pointer transition-all flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'bg-emerald-50/80 border-emerald-400 ring-2 ring-emerald-500/20'
-                        : 'bg-stone-50/60 border-stone-200 hover:bg-stone-100/80 hover:border-stone-300'
+                        ? 'bg-[#e5f8d0] border-[#58cc02] border-b-[#46a302]'
+                        : 'bg-white border-[#e5e5e5] hover:bg-[#f7f7f7]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3.5">
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl border ${buddy.avatarBg}`}
+                        className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl border-2 shadow-xs ${
+                          buddy.id === 'jun'
+                            ? 'bg-[#e7f7ff] border-[#1899d6]'
+                            : buddy.id === 'minho'
+                            ? 'bg-[#f3e8ff] border-[#a559d9]'
+                            : 'bg-[#e5f8d0] border-[#46a302]'
+                        }`}
                       >
                         <span>{buddy.avatarEmoji}</span>
                       </div>
                       <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-stone-900 text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-[#4b4b4b] text-base">
                             {buddy.name}
                           </span>
-                          <span className="text-xs text-stone-500">
+                          <span className="text-xs font-bold text-[#afafaf]">
                             ({buddy.age})
                           </span>
-                          <span className="text-xs">{buddy.flag}</span>
+                          <span className="text-base">{buddy.flag}</span>
                         </div>
-                        <div className="text-xs text-stone-500 flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
+                        <div className="text-xs font-bold text-[#777777] flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3.5 h-3.5 text-[#afafaf]" />
                           <span>
                             {buddy.city}, {buddy.country}
                           </span>
                         </div>
-                        <p className="text-[11px] text-stone-600 line-clamp-1 mt-0.5">
+                        <p className="text-[11px] font-bold text-[#afafaf] line-clamp-1 mt-1">
                           {buddy.interests.join(' · ')}
                         </p>
                       </div>
@@ -206,12 +232,12 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
 
                     <div className="shrink-0 text-right">
                       {isSelected ? (
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-lg">
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          <span>Active</span>
+                        <span className="inline-flex items-center gap-1 text-xs font-black text-[#46a302] bg-[#d7f5b8] px-3 py-1.5 rounded-xl border border-[#b2e57b]">
+                          <CheckCircle className="w-4 h-4 stroke-[3]" />
+                          <span>ACTIVE</span>
                         </span>
                       ) : (
-                        <button className="text-xs font-semibold text-stone-600 hover:text-stone-900 bg-white border border-stone-200 px-3 py-1 rounded-lg shadow-2xs">
+                        <button className="duo-btn-white px-3.5 py-1 text-xs font-extrabold uppercase">
                           Select
                         </button>
                       )}
@@ -223,8 +249,9 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
 
             <div className="pt-2 text-center">
               <button
+                type="button"
                 onClick={() => setShowSwitchModal(false)}
-                className="w-full py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 bg-stone-100 rounded-xl"
+                className="duo-btn-white w-full py-2.5 text-xs font-extrabold uppercase tracking-wider"
               >
                 Close
               </button>

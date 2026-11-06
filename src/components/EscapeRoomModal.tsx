@@ -532,29 +532,27 @@ export const EscapeRoomModal: React.FC<EscapeRoomModalProps> = ({
               )}
 
               {/* Navigation Action */}
-              <div className="pt-2 flex items-center justify-between border-t border-stone-100">
+              <div className="pt-3 flex items-center justify-between border-t-2 border-[#e5e5e5]">
                 <button
+                  type="button"
                   onClick={handleModalClose}
-                  className="px-4 py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 cursor-pointer"
+                  className="duo-btn-white px-4 py-2 text-xs font-black uppercase"
                 >
-                  Cerrar
+                  Close
                 </button>
 
                 <button
+                  type="button"
                   onClick={handleNextClue}
                   disabled={!feedback?.isCorrect}
-                  className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-xs transition-all ${
-                    feedback?.isCorrect
-                      ? 'bg-amber-800 hover:bg-amber-900 text-white cursor-pointer'
-                      : 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                  }`}
+                  className="duo-btn-green px-6 py-2.5 text-xs font-black uppercase tracking-wider flex items-center gap-2"
                 >
                   <span>
                     {currentClueIndex < ESCAPE_ROOM_CLUES.length - 1
-                      ? 'Siguiente Candado'
-                      : 'Abrir Puerta de Salida'}
+                      ? 'Continue'
+                      : 'Unlock Secret Door'}
                   </span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 stroke-[3]" />
                 </button>
               </div>
             </>

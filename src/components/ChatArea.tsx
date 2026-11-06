@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Buddy, ChatMessage } from '../types';
-import { CONVERSATION_STARTERS } from '../data/seedData';
+import { CONVERSATION_STARTERS, CONVERSATION_STARTERS_BY_BUDDY } from '../data/seedData';
 import {
   SpeechListener,
   speakText,
@@ -19,6 +19,7 @@ import {
   Info,
   Radio,
   X,
+  Volume1,
 } from 'lucide-react';
 
 interface ChatAreaProps {
@@ -28,8 +29,8 @@ interface ChatAreaProps {
   isBuddyTyping: boolean;
   starterIndex: number;
   onCycleStarter: () => void;
-  autoSpeakReplies: boolean;
-  onToggleAutoSpeak: () => void;
+  autoSpeakReplies?: boolean;
+  onToggleAutoSpeak?: () => void;
 }
 
 export const ChatArea: React.FC<ChatAreaProps> = ({
@@ -39,134 +40,62 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   isBuddyTyping,
   starterIndex,
   onCycleStarter,
-  autoSpeakReplies,
+  autoSpeakReplies = true,
   onToggleAutoSpeak,
 }) => {
   const [inputText, setInputText] = useState('');
-  const [isListeningMic, setIsListeningMic] = useState(false);
-  const [interimTranscript, setInterimTranscript] = useState('');
-  const [micNotice, setMicNotice] = useState<string | null>(null);
-  const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
   const [expandedTranslations, setExpandedTranslations] = useState<Record<string, boolean>>({});
   const [showAllTranslations, setShowAllTranslations] = useState(false);
+  const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
+  const [isListeningMic, setIsListeningMic] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const speechListenerRef = useRef<SpeechListener | null>(null);
 
-  const currentStarter = CONVERSATION_STARTERS[starterIndex % CONVERSATION_STARTERS.length];
+  const availableStarters = CONVERSATION_STARTERS_BY_BUDDY[currentBuddy.id] || CONVERSATION_STARTERS;
+  const currentStarter = availableStarters[starterIndex % availableStarters.length];
 
-  // Initialize Speech Listener for Spanish chat input
+  // Initialize Speech Listener tailored to buddy's language
   useEffect(() => {
-    speechListenerRef.current = new SpeechListener('es-MX');
+    const langCode =
+      currentBuddy.id === 'jun'
+        ? 'zh-CN'
+        : currentBuddy.id === 'minho'
+        ? 'ko-KR'
+        : 'es-MX';
+    speechListenerRef.current = new SpeechListener(langCode);
     return () => {
       speechListenerRef.current?.stop();
       stopSpeaking();
     };
-  }, []);
+  }, [currentBuddy.id]);
 
   // Auto-scroll to bottom whenever messages or typing state changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isBuddyTyping]);
 
-  // If autoSpeakReplies is enabled and buddy sends a new message, speak it aloud!
-  useEffect(() => {
-    if (!autoSpeakReplies || messages.length === 0) return;
-    const lastMsg = messages[messages.length - 1];
-    if (lastMsg && lastMsg.sender === 'buddy') {
-      speakText(lastMsg.text, 'en-US');
-    }
-  }, [messages.length, autoSpeakReplies]);
-
-  // Handle Voice Input Toggle
-  const handleToggleVoiceInput = () => {
-    setMicNotice(null);
-
-    if (isListeningMic) {
-      speechListenerRef.current?.stop();
-      setIsListeningMic(false);
-      if (interimTranscript) {
-        setInputText((prev) => (prev ? `${prev} ${interimTranscript}` : interimTranscript));
-        setInterimTranscript('');
-      }
-      return;
-    }
-
-    if (!isSpeechRecognitionSupported()) {
-      setMicNotice('Speech recognition is not supported in this browser. You can type in Spanish.');
-      return;
-    }
-
-    const listener = speechListenerRef.current;
-    if (!listener) return;
-
-    const started = listener.start({
-      onStart: () => {
-        setIsListeningMic(true);
-      },
-      onInterim: (text) => {
-        setInterimTranscript(text);
-      },
-      onResult: (finalText) => {
-        setInputText((prev) => {
-          const base = prev.trim();
-          return base ? `${base} ${finalText}` : finalText;
-        });
-        setInterimTranscript('');
-      },
-      onError: (err) => {
-        setIsListeningMic(false);
-        setMicNotice(`Mic error: ${err}`);
-      },
-      onEnd: () => {
-        setIsListeningMic(false);
-      },
-    });
-
-    if (!started) {
-      setIsListeningMic(false);
-    }
-  };
-
   const handleSend = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    const trimmed = (inputText + (interimTranscript ? ` ${interimTranscript}` : '')).trim();
+    if (!trimmed) return;
+
     if (isListeningMic) {
       speechListenerRef.current?.stop();
       setIsListeningMic(false);
     }
 
-    const fullText = (inputText + (interimTranscript ? ` ${interimTranscript}` : '')).trim();
-    if (!fullText) return;
-
-    onSendMessage(fullText, isListeningMic);
+    onSendMessage(trimmed, !!interimTranscript);
     setInputText('');
     setInterimTranscript('');
   };
 
   const handleUseStarter = (starterText: string) => {
     setInputText(starterText);
+    setInterimTranscript('');
     inputRef.current?.focus();
-  };
-
-  // Play audio for any individual message
-  const handlePlayMessageAudio = (msg: ChatMessage) => {
-    if (playingMessageId === msg.id) {
-      stopSpeaking();
-      setPlayingMessageId(null);
-      return;
-    }
-
-    stopSpeaking();
-    setPlayingMessageId(msg.id);
-
-    const lang = msg.language === 'es' ? 'es-MX' : 'en-US';
-    speakText(
-      msg.text,
-      lang,
-      () => setPlayingMessageId(msg.id),
-      () => setPlayingMessageId(null)
-    );
   };
 
   const toggleTranslation = (messageId: string) => {
@@ -181,92 +110,132 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     return !!expandedTranslations[id];
   };
 
+  // Play audio pronunciation for a message
+  const handlePlayMessageAudio = (msg: ChatMessage) => {
+    stopSpeaking();
+    if (playingMessageId === msg.id) {
+      setPlayingMessageId(null);
+      return;
+    }
+
+    setPlayingMessageId(msg.id);
+    const lang = msg.language === 'es' ? 'es-ES' : 'en-US';
+    speakText(
+      msg.text,
+      lang,
+      () => setPlayingMessageId(msg.id),
+      () => setPlayingMessageId(null)
+    );
+  };
+
+  // Microphone toggle
+  const handleToggleMic = () => {
+    if (isListeningMic) {
+      speechListenerRef.current?.stop();
+      setIsListeningMic(false);
+      return;
+    }
+
+    const listener = speechListenerRef.current || new SpeechListener('es-MX');
+    speechListenerRef.current = listener;
+
+    const started = listener.start({
+      onStart: () => {
+        setIsListeningMic(true);
+        setInterimTranscript('');
+      },
+      onInterim: (text) => {
+        setInterimTranscript(text);
+      },
+      onResult: (finalText) => {
+        setInputText((prev) => {
+          const base = prev.trim();
+          return base ? `${base} ${finalText}` : finalText;
+        });
+        setInterimTranscript('');
+        setIsListeningMic(false);
+      },
+      onError: () => {
+        setIsListeningMic(false);
+      },
+      onEnd: () => {
+        setIsListeningMic(false);
+      },
+    });
+
+    if (!started) {
+      setIsListeningMic(false);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xs flex flex-col h-[650px] sm:h-[700px] overflow-hidden">
-      {/* Chat Top Header */}
-      <div className="px-4 sm:px-5 py-3 border-b border-stone-100 bg-stone-50/70 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+    <div className="duo-card flex flex-col h-[650px] sm:h-[720px] overflow-hidden p-0">
+      {/* Duolingo Chat Header */}
+      <div className="px-5 py-3.5 border-b-2 border-[#e5e5e5] bg-white flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3.5">
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl border ${currentBuddy.avatarBg}`}
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl border-2 border-b-4 relative shadow-xs ${
+              currentBuddy.id === 'jun'
+                ? 'bg-[#e7f7ff] border-[#1899d6]'
+                : currentBuddy.id === 'minho'
+                ? 'bg-[#f3e8ff] border-[#a559d9]'
+                : 'bg-[#e5f8d0] border-[#46a302]'
+            }`}
           >
             <span>{currentBuddy.avatarEmoji}</span>
+            <span className="absolute -bottom-1 -right-1 text-xs">{currentBuddy.flag}</span>
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-stone-900 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="font-black text-[#4b4b4b] text-base">
                 Chat with {currentBuddy.name}
               </span>
-              <span className="text-xs">{currentBuddy.flag}</span>
-              <span className="text-[11px] text-stone-400">·</span>
-              <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-sm">
-                Demo Buddy
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#46a302] bg-[#e5f8d0] px-2 py-0.5 rounded-full border border-[#b2e57b]">
+                Buddy
               </span>
             </div>
-            <p className="text-[11px] text-stone-500">
-              You speak/write in <span className="font-semibold text-stone-700">Español</span> · {currentBuddy.name} replies in <span className="font-semibold text-stone-700">English</span>
+            <p className="text-xs font-bold text-[#afafaf] mt-0.5">
+              You write in <span className="text-[#58cc02] font-black">
+                {currentBuddy.id === 'jun' ? 'Mandarin' : currentBuddy.id === 'minho' ? 'Korean' : 'Spanish'}
+              </span> · {currentBuddy.name} writes in <span className="text-[#1cb0f6] font-black">English</span>
             </p>
           </div>
         </div>
 
-        {/* Audio auto-speak & Translation Toggles */}
-        <div className="flex items-center gap-2">
-          {/* Auto Speak Toggle */}
-          <button
-            type="button"
-            onClick={onToggleAutoSpeak}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
-              autoSpeakReplies
-                ? 'bg-purple-50 text-purple-800 border-purple-300'
-                : 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
-            }`}
-            title="Automatically speak partner replies out loud"
-          >
-            {autoSpeakReplies ? (
-              <Volume2 className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
-            ) : (
-              <VolumeX className="w-3.5 h-3.5 text-stone-400" />
-            )}
-            <span className="hidden sm:inline">
-              {autoSpeakReplies ? 'Auto Voice: ON' : 'Auto Voice: OFF'}
-            </span>
-          </button>
-
-          {/* Global Translation Toggle */}
-          <button
-            onClick={() => setShowAllTranslations((prev) => !prev)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
-              showAllTranslations
-                ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
-            }`}
-            title="Toggle English and Spanish translation notes for all messages"
-          >
-            <Globe className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="hidden sm:inline">
-              {showAllTranslations ? 'Translations: ON' : 'Translations: Tap'}
-            </span>
-            <span className="sm:hidden">
-              {showAllTranslations ? 'Notes ON' : 'Notes'}
-            </span>
-          </button>
-        </div>
+        {/* Global Translation Toggle */}
+        <button
+          type="button"
+          onClick={() => setShowAllTranslations((prev) => !prev)}
+          className={`duo-btn-white px-3 py-1.5 text-xs font-extrabold flex items-center gap-1.5 ${
+            showAllTranslations ? 'bg-[#e5f8d0] border-[#58cc02] text-[#46a302]' : ''
+          }`}
+          title="Toggle translation notes for all messages"
+        >
+          <Globe className="w-4 h-4 text-[#58cc02]" />
+          <span className="hidden sm:inline">
+            {showAllTranslations ? 'Translations ON' : 'Show Notes'}
+          </span>
+          <span className="sm:hidden">
+            {showAllTranslations ? 'Notes ON' : 'Notes'}
+          </span>
+        </button>
       </div>
 
       {/* Reciprocal Helper Bar */}
-      <div className="px-4 py-1.5 bg-emerald-50/60 border-b border-emerald-100/60 text-xs text-emerald-900 flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-[11px]">
-          <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+      <div className="px-5 py-2 bg-[#f7f7f7] border-b-2 border-[#e5e5e5] text-xs font-bold text-[#777777] flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[11px]">
+          <Info className="w-4 h-4 text-[#58cc02] shrink-0" />
           <span>
-            <strong>Verbal Practice:</strong> Tap the microphone or 🔊 speaker buttons to practice and hear conversational cadence!
+            <strong>Reciprocal Rule:</strong> Write in your target language to build conversational courage!
           </span>
         </div>
-        <span className="text-[10px] text-emerald-700/80 hidden sm:inline">
+        <span className="text-[11px] font-extrabold text-[#afafaf] hidden sm:inline">
           {messages.length} messages
         </span>
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 custom-scrollbar bg-stone-50/30">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 custom-scrollbar bg-[#f7f7f7]">
         {messages.map((msg) => {
           const isUser = msg.sender === 'user';
           const isVisible = isTranslationVisible(msg.id);
@@ -278,37 +247,32 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} group`}
             >
               {/* Speaker Label & Timestamp */}
-              <div className="flex items-center gap-1.5 mb-1 text-[11px] text-stone-400 px-1">
-                <span className="font-semibold text-stone-600">
-                  {isUser ? 'You (Practicing Spanish)' : `${currentBuddy.name} (Practicing English)`}
+              <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-[#afafaf] px-1">
+                <span>
+                  {isUser ? 'You (Practicing)' : `${currentBuddy.name} (Practicing English)`}
                 </span>
                 <span>·</span>
                 <span>{msg.timestamp}</span>
-                {msg.isSpokenVoice && (
-                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">
-                    🎙️ Spoken
-                  </span>
-                )}
               </div>
 
-              {/* Speech Bubble */}
+              {/* Duolingo Speech Bubble */}
               <div
-                className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-3.5 sm:p-4 text-sm leading-relaxed transition-all ${
+                className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-sm leading-relaxed transition-all relative ${
                   isUser
-                    ? 'bg-emerald-600 text-white rounded-tr-xs shadow-xs'
-                    : 'bg-white text-stone-900 border border-stone-200/90 rounded-tl-xs shadow-xs'
+                    ? 'bg-[#58cc02] border-2 border-b-4 border-[#46a302] text-white rounded-tr-xs shadow-xs font-semibold'
+                    : 'bg-white border-2 border-b-4 border-[#e5e5e5] text-[#4b4b4b] rounded-tl-xs shadow-xs font-semibold'
                 }`}
               >
-                {/* Challenge tag if this message came from a challenge */}
+                {/* Challenge tag if from challenge */}
                 {msg.isChallengeResult && (
-                  <div className="mb-2 pb-1.5 border-b border-white/20 text-[11px] font-bold flex items-center gap-1 text-emerald-100">
-                    <Sparkles className="w-3 h-3 text-amber-300" />
-                    <span>{msg.challengeTitle || 'Conversation Challenge Completed'}</span>
+                  <div className="mb-2 pb-1.5 border-b border-white/30 text-[11px] font-black flex items-center gap-1 text-white">
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
+                    <span>{msg.challengeTitle || 'Challenge Completed!'}</span>
                   </div>
                 )}
 
                 <div className="flex items-start justify-between gap-3">
-                  <p className="text-[14px] sm:text-[15px] font-medium whitespace-pre-wrap flex-1">
+                  <p className="text-[15px] font-bold whitespace-pre-wrap flex-1">
                     {msg.text}
                   </p>
 
@@ -316,65 +280,54 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                   <button
                     type="button"
                     onClick={() => handlePlayMessageAudio(msg)}
-                    className={`p-1.5 rounded-lg shrink-0 transition-all cursor-pointer ${
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all cursor-pointer ${
                       isPlaying
                         ? isUser
-                          ? 'bg-emerald-700 text-white animate-bounce'
-                          : 'bg-purple-100 text-purple-700 animate-bounce'
+                          ? 'bg-white text-[#58cc02] animate-pulse ring-2 ring-white'
+                          : 'bg-[#58cc02] text-white animate-pulse'
                         : isUser
-                        ? 'text-emerald-100 hover:bg-emerald-700/60'
-                        : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
+                        ? 'bg-white/20 hover:bg-white/30 text-white'
+                        : 'bg-[#f7f7f7] hover:bg-[#e5e5e5] text-[#777777]'
                     }`}
-                    title={isPlaying ? 'Stop audio' : 'Listen to native pronunciation out loud'}
+                    title="Listen to audio pronunciation"
                   >
-                    <Volume2 className="w-4 h-4" />
+                    {isPlaying ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                   </button>
                 </div>
 
                 {/* Translation Display */}
                 {isVisible && (
                   <div
-                    className={`mt-2.5 pt-2 text-xs border-t transition-all ${
+                    className={`mt-3 pt-2.5 text-xs border-t-2 transition-all ${
                       isUser
-                        ? 'border-emerald-500/50 text-emerald-50 bg-emerald-700/40 -mx-3 -mb-2 px-3 py-2 rounded-b-xl'
-                        : 'border-stone-100 text-stone-600 bg-stone-50 -mx-3 -mb-2 px-3 py-2 rounded-b-xl'
+                        ? 'border-white/20 text-white/90 bg-[#4cae02]/60 -mx-4 -mb-3 px-4 py-2.5 rounded-b-2xl'
+                        : 'border-[#f0f0f0] text-[#777777] bg-[#f7f7f7] -mx-4 -mb-3 px-4 py-2.5 rounded-b-2xl'
                     }`}
                   >
-                    <div className="flex items-center gap-1 font-semibold text-[11px] mb-1 opacity-90">
-                      <Globe className="w-3 h-3 shrink-0" />
+                    <div className="flex items-center gap-1 font-black text-[11px] mb-1 opacity-90 uppercase tracking-wide">
+                      <Globe className="w-3.5 h-3.5 shrink-0" />
                       <span>
                         {isUser
-                          ? 'Demo polish & meaning:'
-                          : 'Traducción al español:'}
+                          ? 'Polish & Meaning:'
+                          : 'Traducción / Meaning:'}
                       </span>
                     </div>
-                    <p className="italic text-[12px] leading-snug">
+                    <p className="font-medium text-[12px] leading-snug">
                       {msg.translation}
                     </p>
                   </div>
                 )}
               </div>
 
-              {/* Translation & Pronounce Action Bar */}
+              {/* Translation Toggle Button */}
               <div className="mt-1 flex items-center gap-2 px-1">
                 <button
+                  type="button"
                   onClick={() => toggleTranslation(msg.id)}
-                  className={`text-[11px] font-semibold flex items-center gap-1 py-0.5 px-1.5 rounded transition-colors cursor-pointer ${
-                    isUser
-                      ? 'text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50'
-                      : 'text-stone-500 hover:text-stone-800 hover:bg-stone-100'
-                  }`}
+                  className="text-[11px] font-extrabold text-[#afafaf] hover:text-[#58cc02] py-0.5 px-1.5 rounded transition-colors flex items-center gap-1"
                 >
-                  <Globe className="w-3 h-3 text-emerald-600" />
-                  <span>{isVisible ? 'Hide note' : 'Show translation'}</span>
-                </button>
-
-                <button
-                  onClick={() => handlePlayMessageAudio(msg)}
-                  className="text-[11px] font-semibold text-stone-500 hover:text-stone-800 flex items-center gap-1 py-0.5 px-1.5 rounded hover:bg-stone-100 transition-colors cursor-pointer"
-                >
-                  <Volume2 className="w-3 h-3 text-stone-400" />
-                  <span>{isPlaying ? 'Detener audio' : 'Pronunciar'}</span>
+                  <Globe className="w-3 h-3" />
+                  <span>{isVisible ? 'Hide translation' : 'Show translation'}</span>
                 </button>
               </div>
             </div>
@@ -383,10 +336,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
         {/* Scripted Buddy Typing Indicator */}
         {isBuddyTyping && (
-          <div className="flex items-center gap-2 text-xs text-stone-500 bg-white border border-stone-200/80 rounded-2xl px-3.5 py-2.5 w-fit shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            <span className="font-medium">
-              {currentBuddy.name} is typing in English...
+          <div className="flex items-center gap-2.5 text-xs font-bold text-[#777777] bg-white border-2 border-b-4 border-[#e5e5e5] rounded-2xl px-4 py-3 w-fit shadow-xs animate-pulse">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#58cc02] animate-ping" />
+            <span>
+              {currentBuddy.name} is typing a reply in English...
             </span>
           </div>
         )}
@@ -395,30 +348,34 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       </div>
 
       {/* Suggested Conversation Starter Banner */}
-      <div className="px-4 py-2.5 bg-amber-50/70 border-t border-amber-200/70 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+      <div className="px-5 py-3 bg-[#fff5e6] border-t-2 border-[#ffd599] flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-7 h-7 rounded-xl bg-[#ff9600] text-white flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4 fill-white" />
+          </div>
           <div className="min-w-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">
-              Conversation Starter
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#e58500] block">
+              Daily Practice Starter
             </span>
-            <p className="text-xs font-semibold text-stone-800 truncate">
+            <p className="text-xs font-extrabold text-[#4b4b4b] truncate">
               {currentStarter}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <button
+            type="button"
             onClick={() => handleUseStarter(currentStarter)}
-            className="px-2.5 py-1 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-2xs transition-colors cursor-pointer"
+            className="duo-btn-amber px-3 py-1.5 text-xs font-black"
             title="Copy question into message box"
           >
-            Use this starter
+            Use starter
           </button>
           <button
+            type="button"
             onClick={onCycleStarter}
-            className="p-1 rounded-lg text-amber-700 hover:bg-amber-100 transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-white border-2 border-b-4 border-[#ffd599] text-[#ff9600] hover:bg-[#fff9e6] flex items-center justify-center transition-all cursor-pointer"
             title="Show another starter"
           >
             <Shuffle className="w-3.5 h-3.5" />
@@ -426,48 +383,24 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         </div>
       </div>
 
-      {/* Live Voice Recording Status Banner */}
-      {isListeningMic && (
-        <div className="px-4 py-2 bg-rose-50 border-t border-rose-200 text-xs text-rose-900 flex items-center justify-between animate-pulse">
-          <div className="flex items-center gap-2 font-semibold">
-            <Radio className="w-4 h-4 text-rose-600" />
-            <span>Escuchando tu voz en español... di tu mensaje con naturalidad</span>
-          </div>
-          <button
-            type="button"
-            onClick={handleToggleVoiceInput}
-            className="text-[11px] font-bold text-rose-800 bg-white border border-rose-300 px-2 py-0.5 rounded cursor-pointer"
-          >
-            Listo / Detener
-          </button>
-        </div>
-      )}
-
-      {micNotice && (
-        <div className="px-4 py-1.5 bg-amber-50 text-[11px] text-amber-800 border-t border-amber-200">
-          {micNotice}
-        </div>
-      )}
-
-      {/* Composer Input Bar with Mic & Send */}
+      {/* Composer Input Bar */}
       <form
         onSubmit={handleSend}
-        className="p-3.5 sm:p-4 bg-white border-t border-stone-200/90 flex items-center gap-2"
+        className="p-4 bg-white border-t-2 border-[#e5e5e5] flex items-center gap-2.5"
       >
-        {/* Verbal Voice Input Button */}
         <button
           type="button"
-          onClick={handleToggleVoiceInput}
-          className={`h-11 px-3 sm:px-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+          onClick={handleToggleMic}
+          className={`h-12 px-3.5 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer border-b-4 ${
             isListeningMic
-              ? 'bg-rose-600 hover:bg-rose-700 text-white ring-4 ring-rose-300 animate-pulse'
-              : 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100'
+              ? 'bg-[#ff4b4b] hover:bg-[#ea2b2b] text-white border-[#cc1b1b] ring-4 ring-[#ffc2c2] animate-pulse'
+              : 'bg-[#e5f8d0] text-[#46a302] border-[#b2e57b] hover:bg-[#d7f5b8]'
           }`}
-          title={isListeningMic ? 'Detener micrófono' : 'Hablar en español con el micrófono'}
+          title={isListeningMic ? 'Detener micrófono' : 'Hablar con el micrófono'}
         >
-          {isListeningMic ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-emerald-700" />}
+          {isListeningMic ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-[#58cc02]" />}
           <span className="hidden sm:inline">
-            {isListeningMic ? 'Escuchando...' : 'Hablar'}
+            {isListeningMic ? 'Listening...' : 'Speak'}
           </span>
         </button>
 
@@ -480,8 +413,14 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               setInputText(e.target.value);
               setInterimTranscript('');
             }}
-            placeholder="Escribe o habla en español... (e.g. ¿Qué música te gusta? o Hoy comí tacos)"
-            className="w-full pl-3.5 pr-10 py-3 text-sm rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-stone-50/50 text-stone-900 placeholder:text-stone-400 font-medium"
+            placeholder={
+              currentBuddy.id === 'jun'
+                ? 'Type in Mandarin Chinese (or English/Spanish)...'
+                : currentBuddy.id === 'minho'
+                ? 'Type in Korean (or English/Spanish)...'
+                : 'Type your message in Spanish (or speak above)...'
+            }
+            className="w-full pl-4 pr-10 py-3 text-sm rounded-2xl border-2 border-b-4 border-[#e5e5e5] focus:outline-none focus:border-[#58cc02] focus:border-b-[#46a302] bg-[#f7f7f7] text-[#4b4b4b] placeholder:text-[#afafaf] font-bold"
           />
           {inputText && (
             <button
@@ -493,11 +432,11 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 setInterimTranscript('');
                 inputRef.current?.focus();
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-600 hover:text-stone-900 flex items-center justify-center transition-colors cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#e5e5e5] hover:bg-[#d4d4d4] text-[#777777] flex items-center justify-center transition-colors cursor-pointer"
               title="Clear input"
               aria-label="Clear input"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3.5 h-3.5 stroke-[2.5]" />
             </button>
           )}
         </div>
@@ -505,12 +444,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         <button
           type="submit"
           disabled={(!inputText.trim() && !interimTranscript.trim()) || isBuddyTyping}
-          className={`h-11 px-4 sm:px-5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer ${
-            (inputText.trim() || interimTranscript.trim()) && !isBuddyTyping
-              ? 'bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white shadow-emerald-500/20'
-              : 'bg-stone-200 text-stone-400 cursor-not-allowed'
-          }`}
-          title="Send message in Spanish"
+          className="duo-btn-green h-12 px-5 text-xs font-black flex items-center justify-center gap-2"
+          title="Send message"
         >
           <span className="hidden sm:inline">Send</span>
           <Send className="w-4 h-4" />

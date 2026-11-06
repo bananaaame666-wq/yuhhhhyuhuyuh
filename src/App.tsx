@@ -315,27 +315,28 @@ export default function App() {
       <Header streakState={streakState} />
 
       {/* Hero Welcome & Subtitle Bar */}
-      <section className="bg-stone-100/60 border-b border-stone-200/70 py-4 px-4 sm:px-6 lg:px-8">
+      <section className="bg-white border-b-2 border-[#e5e5e5] py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight flex items-center gap-2 flex-wrap">
-              <span>Practice verbally with a person. Speak aloud.</span>
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-                🎙️ Verbal Voice Active
+            <h1 className="text-xl sm:text-2xl font-black text-[#4b4b4b] tracking-tight flex items-center gap-2 flex-wrap">
+              <span>Practice with a real person. Keep your streak going!</span>
+              <span className="text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#e5f8d0] text-[#46a302] border border-[#b2e57b]">
+                ✨ Live Exchange
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-stone-600 mt-0.5 max-w-2xl">
-              Break the speaking freeze verbally: Speak <strong className="text-stone-900 font-semibold">Spanish</strong> into your microphone, get real-time speech transcription, hear native pronunciation, and play three voice-activated interactive challenges!
+            <p className="text-xs sm:text-sm font-bold text-[#afafaf] mt-0.5 max-w-2xl">
+              Break the speaking freeze: write or speak in Spanish, exchange with buddies from around the world (Camila 🇲🇽, Jun 🇨🇳, Minho 🇰🇷), and unlock daily conversation challenges!
             </p>
           </div>
 
           {/* Quick Demo Reset for Hackathon Judges */}
           <button
+            type="button"
             onClick={handleResetDemoState}
-            className="self-start md:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-600 bg-white border border-stone-300 hover:bg-stone-50 hover:text-stone-900 transition-colors cursor-pointer shadow-2xs"
+            className="duo-btn-white self-start md:self-auto px-3.5 py-2 text-xs font-black flex items-center gap-1.5 shrink-0"
             title="Reset streak to 4 days (yesterday) to test the 4 → 5 advance!"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-stone-400" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#afafaf]" />
             <span>Reset Demo State</span>
           </button>
         </div>
@@ -343,28 +344,30 @@ export default function App() {
 
       {/* Mobile Tab Switcher */}
       <div className="lg:hidden max-w-7xl mx-auto px-4 pt-4 w-full">
-        <div className="grid grid-cols-2 p-1 bg-stone-200/70 rounded-xl text-xs font-bold text-stone-700">
+        <div className="grid grid-cols-2 p-1.5 bg-[#e5e5e5] rounded-2xl text-xs font-black">
           <button
+            type="button"
             onClick={() => setMobileActiveTab('chat')}
-            className={`py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+            className={`py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
               mobileActiveTab === 'chat'
-                ? 'bg-white text-emerald-800 shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white text-[#58cc02] shadow-xs border-b-2 border-[#d4d4d4]'
+                : 'text-[#777777] hover:text-[#4b4b4b]'
             }`}
           >
             <MessageSquare className="w-4 h-4" />
             <span>Chat & Practice</span>
           </button>
           <button
+            type="button"
             onClick={() => setMobileActiveTab('buddy_challenges')}
-            className={`py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+            className={`py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
               mobileActiveTab === 'buddy_challenges'
-                ? 'bg-white text-emerald-800 shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white text-[#58cc02] shadow-xs border-b-2 border-[#d4d4d4]'
+                : 'text-[#777777] hover:text-[#4b4b4b]'
             }`}
           >
             <Users className="w-4 h-4" />
-            <span>Buddy & Challenges</span>
+            <span>Buddy & Quests</span>
           </button>
         </div>
       </div>

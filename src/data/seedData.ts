@@ -18,36 +18,36 @@ export const BUDDY_PROFILES: Buddy[] = [
     greeting: '¡Hola! I love sharing Mexican culture while improving my English conversational flow with friendly pals.',
   },
   {
-    id: 'mateo',
-    name: 'Mateo',
-    age: 25,
-    city: 'Bogotá',
-    country: 'Colombia',
-    flag: '🇨🇴',
-    nativeLanguage: 'Spanish (Native)',
+    id: 'jun',
+    name: 'Jun',
+    age: 24,
+    city: 'Shanghai',
+    country: 'China',
+    flag: '🇨🇳',
+    nativeLanguage: 'Mandarin Chinese (Native)',
     learningLanguage: 'English',
-    level: 'Elementary (A2)',
-    avatarBg: 'bg-amber-100 text-amber-800 border-amber-300',
-    avatarEmoji: '☕',
-    bio: 'Specialty coffee barista & mountain hiker. Learning English to connect with international travelers and origin roasters.',
-    interests: ['Filter Coffee', 'Andean Trails', 'Cycling', 'Podcasts'],
-    greeting: '¡Hola amigo! Let’s exchange stories—you practice your Spanish with me, and I’ll practice my English with you.',
+    level: 'Intermediate (B1)',
+    avatarBg: 'bg-sky-100 text-sky-800 border-sky-300',
+    avatarEmoji: '👨🏻‍💻',
+    bio: 'Software engineer & tea culture enthusiast from Shanghai. Practicing conversational English while sharing Chinese language & culture!',
+    interests: ['Longjing Tea', 'Dim Sum', 'Indie Games', 'Bouldering'],
+    greeting: 'Nǐ hǎo! Let’s exchange stories—you practice with me, and I practice my conversational English with you.',
   },
   {
-    id: 'lucia',
-    name: 'Lucía',
-    age: 28,
-    city: 'Seville',
-    country: 'Spain',
-    flag: '🇪🇸',
-    nativeLanguage: 'Spanish (Native)',
+    id: 'minho',
+    name: 'Minho',
+    age: 25,
+    city: 'Seoul',
+    country: 'South Korea',
+    flag: '🇰🇷',
+    nativeLanguage: 'Korean (Native)',
     learningLanguage: 'English',
-    level: 'Upper Intermediate (B2)',
-    avatarBg: 'bg-rose-100 text-rose-800 border-rose-300',
-    avatarEmoji: '🏛️',
-    bio: 'Architectural heritage researcher & acoustic guitarist. Learning English to present at European symposiums.',
-    interests: ['Mudejar Plazas', 'Flamenco Guitar', 'Photography', 'Tapas'],
-    greeting: '¡Buenas tardes! Practicing together makes language learning feel natural rather than like a grammar exam.',
+    level: 'Upper Elementary (A2)',
+    avatarBg: 'bg-violet-100 text-violet-800 border-violet-300',
+    avatarEmoji: '🎧',
+    bio: 'Music producer & street photographer from Seoul. Learning conversational English to collaborate with global creators!',
+    interests: ['K-Indie Music', 'Film Photography', 'Spicy Ramyun', 'Han River Walks'],
+    greeting: 'Annyeonghaseyo! Practicing daily conversation makes language stick way faster than memorizing flashcards.',
   },
 ];
 
@@ -81,33 +81,82 @@ export const INITIAL_MESSAGES_BY_BUDDY: Record<string, ChatMessage[]> = {
       timestamp: '10:19 AM',
     },
   ],
+  jun: [
+    {
+      id: 'jun-seed-1',
+      sender: 'buddy',
+      buddyId: 'jun',
+      text: 'Nǐ hǎo! Good morning! I just brewed a fresh pot of Longjing green tea here in Shanghai. How is your day going?',
+      language: 'en',
+      translation: '¡Hola! ¡Buenos días! Acabo de preparar una tetera de té verde Longjing aquí en Shanghái. ¿Cómo va tu día? (你好！)',
+      timestamp: '09:30 AM',
+    },
+    {
+      id: 'jun-seed-2',
+      sender: 'user',
+      buddyId: 'jun',
+      text: '¡Hola Jun! Todo bien por aquí. Me gusta mucho la cultura del té y quiero practicar.',
+      language: 'es',
+      translation: "Demo translation · your buddy can help you polish it: 'Hello Jun! All good here. I really like tea culture and want to practice.'",
+      timestamp: '09:34 AM',
+    },
+    {
+      id: 'jun-seed-3',
+      sender: 'buddy',
+      buddyId: 'jun',
+      text: 'That is awesome! In China we say "循序渐进" (step by step brings great mastery). What kind of tea or drinks do you like having in the morning?',
+      language: 'en',
+      translation: '¡Eso es genial! En China decimos "paso a paso se logra la maestría". ¿Qué tipo de té o bebidas te gusta tomar en la mañana?',
+      timestamp: '09:36 AM',
+    },
+  ],
+  minho: [
+    {
+      id: 'min-seed-1',
+      sender: 'buddy',
+      buddyId: 'minho',
+      text: 'Annyeonghaseyo! Hey there! I just wrapped up a sound recording session in Hongdae, Seoul. Did you have a good week?',
+      language: 'en',
+      translation: '¡Hola! ¡Qué tal! Acabo de terminar una sesión de grabación de sonido en Hongdae, Seúl. ¿Tuviste una buena semana? (안녕하세요!)',
+      timestamp: '11:05 AM',
+    },
+    {
+      id: 'min-seed-2',
+      sender: 'user',
+      buddyId: 'minho',
+      text: '¡Hola Minho! Sí, estuvo genial. Escuché mucha música y descansé con amigos.',
+      language: 'es',
+      translation: "Demo translation · your buddy can help you polish it: 'Hello Minho! Yes, it was great. I listened to a lot of music and rested with friends.'",
+      timestamp: '11:08 AM',
+    },
+    {
+      id: 'min-seed-3',
+      sender: 'buddy',
+      buddyId: 'minho',
+      text: 'Sounds so relaxing! Music is our universal language, and practicing conversation brings everyone together. What songs are on your playlist lately?',
+      language: 'en',
+      translation: '¡Suena muy relajante! La música es nuestro idioma universal, y practicar conversación une a todos. ¿Qué canciones están en tu lista últimamente?',
+      timestamp: '11:11 AM',
+    },
+  ],
   mateo: [
     {
       id: 'mat-seed-1',
       sender: 'buddy',
       buddyId: 'mateo',
-      text: '¡Hola! I just brewed a fresh pour-over coffee here in Bogotá. Are you having a good day so far?',
+      text: '¡Hola! I just brewed a fresh pour-over coffee. Are you having a good day so far?',
       language: 'en',
-      translation: '¡Hola! Acabo de preparar un café filtrado aquí en Bogotá. ¿Estás teniendo un buen día hasta ahora?',
+      translation: '¡Hola! Acabo de preparar un café filtrado. ¿Estás teniendo un buen día hasta ahora?',
       timestamp: '09:30 AM',
     },
     {
       id: 'mat-seed-2',
       sender: 'user',
       buddyId: 'mateo',
-      text: '¡Hola Mateo! Sí, hoy hace buen tiempo y estoy practicando un poco de español.',
+      text: '¡Hola! Sí, hoy hace buen tiempo y estoy practicando.',
       language: 'es',
-      translation: "Demo translation · your buddy can help you polish it: 'Hello Mateo! Yes, the weather is nice today and I am practicing a bit of Spanish.'",
+      translation: "Demo translation: 'Hello! Yes, the weather is nice today and I am practicing.'",
       timestamp: '09:34 AM',
-    },
-    {
-      id: 'mat-seed-3',
-      sender: 'buddy',
-      buddyId: 'mateo',
-      text: 'That is awesome! Coffee and language practice are the best morning ritual. What is your favorite morning drink?',
-      language: 'en',
-      translation: '¡Eso es genial! El café y la práctica de idiomas son el mejor ritual matutino. ¿Cuál es tu bebida matutina favorita?',
-      timestamp: '09:36 AM',
     },
   ],
   lucia: [
@@ -115,40 +164,42 @@ export const INITIAL_MESSAGES_BY_BUDDY: Record<string, ChatMessage[]> = {
       id: 'luc-seed-1',
       sender: 'buddy',
       buddyId: 'lucia',
-      text: '¡Buenas tardes! I am taking a short break from drafting historic arches in Seville. How is your day going?',
+      text: '¡Buenas tardes! How is your day going?',
       language: 'en',
-      translation: '¡Buenas tardes! Me estoy tomando un pequeño descanso de dibujar arcos históricos en Sevilla. ¿Cómo va tu día?',
+      translation: '¡Buenas tardes! ¿Cómo va tu día?',
       timestamp: '11:05 AM',
-    },
-    {
-      id: 'luc-seed-2',
-      sender: 'user',
-      buddyId: 'lucia',
-      text: '¡Hola Lucía! Todo bien por aquí. Me gusta mucho la arquitectura tradicional de España.',
-      language: 'es',
-      translation: "Demo translation · your buddy can help you polish it: 'Hello Lucía! All good around here. I really like traditional Spanish architecture.'",
-      timestamp: '11:08 AM',
-    },
-    {
-      id: 'luc-seed-3',
-      sender: 'buddy',
-      buddyId: 'lucia',
-      text: 'Thank you! The historic courtyards here have so much character. Do you enjoy visiting historic buildings or nature spots more?',
-      language: 'en',
-      translation: '¡Gracias! Los patios históricos de aquí tienen mucho carácter. ¿Disfrutas más visitando edificios históricos o lugares en la naturaleza?',
-      timestamp: '11:11 AM',
     },
   ],
 };
 
-export const CONVERSATION_STARTERS = [
-  '¿Qué canción has escuchado mucho últimamente?',
-  '¿Tienes alguna mascota o qué animal te gustaría tener?',
-  '¿Cuál fue la comida más rica que probaste esta semana?',
-  '¿Qué planes tienes para el próximo fin de semana?',
-  '¿Qué lugar de tu país me recomiendas visitar algún día?',
-  '¿Prefieres tomar café por la mañana o té por la tarde?',
-];
+export const CONVERSATION_STARTERS_BY_BUDDY: Record<string, string[]> = {
+  camila: [
+    '¿Qué canción has escuchado mucho últimamente?',
+    '¿Tienes alguna mascota o qué animal te gustaría tener?',
+    '¿Cuál fue la comida más rica que probaste esta semana?',
+    '¿Qué planes tienes para el próximo fin de semana?',
+    '¿Qué lugar de la Ciudad de México me recomiendas visitar?',
+    '¿Prefieres tomar café por la mañana o té por la tarde?',
+  ],
+  jun: [
+    '你好！今天过得怎么样？ (Nǐ hǎo! How is your day going?)',
+    '你最喜欢喝什么中国茶？ (What Chinese tea do you like most?)',
+    '上海现在的天气怎么样？ (How is the weather in Shanghai?)',
+    '周末你一般做什么好玩的？ (What fun things do you do on weekends?)',
+    '推荐一家上海好吃的点心店吧！ (Recommend a good dim sum spot in Shanghai!)',
+    '你正在开发什么有趣的软件项目？ (What software projects are you coding?)',
+  ],
+  minho: [
+    '안녕하세요! 오늘 하루 어땠어요? (Annyeonghaseyo! How was your day?)',
+    '요즘 자주 듣는 노래 추천해 주세요! (Recommend a song you listen to often!)',
+    '서울에서 가장 좋아하는 장소가 어디예요? (What is your favorite place in Seoul?)',
+    '홍대 스튜디오에서 어떤 음악을 만들어요? (What music are you producing in Hongdae?)',
+    '주말에 보통 뭐 하고 지내요? (What do you usually do on weekends?)',
+    '라면이나 매운 음식 좋아해요? (Do you like spicy ramyun or Korean street food?)',
+  ],
+};
+
+export const CONVERSATION_STARTERS = CONVERSATION_STARTERS_BY_BUDDY.camila;
 
 export interface ScriptedReply {
   text: string;
@@ -170,11 +221,29 @@ export function generateScriptedBuddyReply(
     lower.includes('banda') ||
     lower.includes('rock') ||
     lower.includes('pop') ||
-    lower.includes('cantar')
+    lower.includes('cantar') ||
+    lower.includes('song') ||
+    lower.includes('music') ||
+    userText.includes('歌') ||
+    userText.includes('音乐') ||
+    userText.includes('노래') ||
+    userText.includes('음악')
   ) {
+    if (buddy.id === 'minho') {
+      return {
+        text: `Music is my entire world! I've been experimenting with K-indie synth textures in my Hongdae studio this week. What artists have been in your headphones today?`,
+        translation: `¡La música es todo mi mundo! Esta semana estuve experimentando con texturas sintéticas de K-indie en mi estudio de Hongdae. ¿Qué artistas has estado escuchando hoy?`,
+      };
+    }
+    if (buddy.id === 'jun') {
+      return {
+        text: `Music keeps me focused when coding long algorithms! I listen to ambient lo-fi and guzheng instrumentals. Do you enjoy instrumental or vocal tracks more?`,
+        translation: `¡La música me mantiene concentrado cuando programo algoritmos largos! Escucho lo-fi ambiental e instrumentales de guzheng. ¿Te gustan más las pistas instrumentales o con voces?`,
+      };
+    }
     return {
-      text: `Music is honestly the most fun way to pick up slang and cadence! I've been looping Spanish acoustic playlists while working. What other music genres do you enjoy?`,
-      translation: `¡La música es sinceramente la forma más divertida de aprender modismos y ritmo! He estado escuchando listas acústicas en español mientras trabajo. ¿Qué otros géneros musicales disfrutas?`,
+      text: `Music is honestly the most fun way to pick up slang and cadence! I've been looping acoustic playlists while sketching. What music genres do you enjoy most?`,
+      translation: `¡La música es sinceramente la forma más divertida de aprender modismos y ritmo! He estado escuchando listas acústicas mientras dibujo. ¿Qué géneros musicales disfrutas más?`,
     };
   }
 
@@ -184,11 +253,19 @@ export function generateScriptedBuddyReply(
     lower.includes('gato') ||
     lower.includes('mascota') ||
     lower.includes('animal') ||
-    lower.includes('canelo')
+    lower.includes('canelo') ||
+    lower.includes('dog') ||
+    lower.includes('cat') ||
+    lower.includes('pet') ||
+    userText.includes('狗') ||
+    userText.includes('猫') ||
+    userText.includes('宠物') ||
+    userText.includes('강아지') ||
+    userText.includes('고양이')
   ) {
     return {
-      text: `Pets bring so much positive energy into a home! Whenever I sit down to practice my English verbs, my pet curls up right next to me. Do they know any funny habits or tricks?`,
-      translation: `¡Las mascotas traen tanta energía positiva al hogar! Cada vez que me siento a practicar mis verbos en inglés, mi mascota se acurruca justo a mi lado. ¿Tienen alguna costumbre o truco divertido?`,
+      text: `Pets bring so much positive energy into our daily lives! Whenever I sit down to practice my conversational English, having a furry friend nearby makes learning completely stress-free. Do you have any funny pet stories?`,
+      translation: `¡Las mascotas traen tanta energía positiva a nuestras vidas diarias! Cada vez que me siento a practicar mi inglés conversacional, tener a un amigo peludo cerca hace que aprender sea sin estrés. ¿Tienes alguna anécdota divertida con mascotas?`,
     };
   }
 
@@ -201,66 +278,72 @@ export function generateScriptedBuddyReply(
     lower.includes('que tal') ||
     lower.includes('bien') ||
     lower.includes('hoy') ||
-    lower.includes('dia')
+    lower.includes('dia') ||
+    lower.includes('hello') ||
+    lower.includes('hi') ||
+    userText.includes('你好') ||
+    userText.includes('早') ||
+    userText.includes('안녕')
   ) {
+    if (buddy.id === 'jun') {
+      return {
+        text: `Nǐ hǎo! It’s awesome to chat with you today! The weather here in Shanghai is nice, and I just stepped out for some fresh air along the Bund. How is your day starting out?`,
+        translation: `¡Hola (你好)! ¡Es genial charlar contigo hoy! El clima aquí en Shanghái está agradable y salí a tomar aire fresco por el Bund. ¿Cómo va comenzando tu día?`,
+      };
+    }
+    if (buddy.id === 'minho') {
+      return {
+        text: `Annyeonghaseyo! Great to connect with you! I took a refreshing morning walk near the Han River before hitting the music studio. How has your week been treating you?`,
+        translation: `¡Hola (안녕하세요)! ¡Qué alegría conectar contigo! Di un paseo matutino refrescante cerca del río Han antes de ir al estudio de música. ¿Cómo te ha tratado la semana?`,
+      };
+    }
     return {
-      text: `¡Hola! It’s really great to chat with you today! The weather here in ${buddy.city} has been lovely. How is everything where you are?`,
-      translation: `¡Hola! ¡Es realmente genial charlar contigo hoy! El clima aquí en ${buddy.city} ha estado encantador. ¿Cómo está todo por donde tú estás?`,
+      text: `¡Hola! It’s really great to chat with you today! The weather here in Mexico City has been lovely and warm. How is everything where you are?`,
+      translation: `¡Hola! ¡Es realmente genial charlar contigo hoy! El clima aquí en la Ciudad de México ha estado encantador y cálido. ¿Cómo está todo por donde tú estás?`,
     };
   }
 
-  // 4. Questions / Curiosity topic
-  if (
-    lower.includes('que') ||
-    lower.includes('donde') ||
-    lower.includes('por que') ||
-    lower.includes('cual') ||
-    lower.includes('quien') ||
-    lower.includes('?')
-  ) {
-    return {
-      text: `That is such a thoughtful question! In my hometown we have a saying: "Preguntando se llega a Roma" (asking questions leads you anywhere). I love how curious you are!`,
-      translation: `¡Esa es una pregunta muy considerada! En mi tierra tenemos un dicho: "Preguntando se llega a Roma". ¡Me encanta lo curioso que eres!`,
-    };
-  }
-
-  // 5. Food / Cooking topic
+  // 4. Food / Cooking / Tea / Coffee
   if (
     lower.includes('comida') ||
     lower.includes('comer') ||
     lower.includes('tacos') ||
     lower.includes('cafe') ||
+    lower.includes('te') ||
     lower.includes('cocinar') ||
     lower.includes('restaurante') ||
-    lower.includes('cena') ||
-    lower.includes('desayuno')
+    lower.includes('food') ||
+    lower.includes('tea') ||
+    lower.includes('coffee') ||
+    userText.includes('茶') ||
+    userText.includes('吃') ||
+    userText.includes('点心') ||
+    userText.includes('밥') ||
+    userText.includes('라면') ||
+    userText.includes('떡볶이')
   ) {
+    if (buddy.id === 'jun') {
+      return {
+        text: `Now you're speaking my language! Tea and food culture are huge here in Shanghai—we love hot xiaolongbao soup dumplings with fresh Longjing green tea. What is your favorite treat when you want comfort food?`,
+        translation: `¡Ahora sí estás hablando mi idioma! La cultura del té y la comida es enorme en Shanghái: nos encantan los dumplings de sopa xiaolongbao con té verde Longjing fresco. ¿Cuál es tu comida reconfortante favorita?`,
+      };
+    }
+    if (buddy.id === 'minho') {
+      return {
+        text: `Food is life in Seoul! After late night recording sessions, a steaming bowl of spicy ramyun or crispy tteokbokki is unbeatable. What's your go-to comfort meal after a long day?`,
+        translation: `¡La comida es vida en Seúl! Después de grabar hasta tarde, un tazón humeante de ramen picante o tteokbokki crujiente es insuperable. ¿Cuál es tu comida favorita tras un largo día?`,
+      };
+    }
     return {
-      text: `Now you are making me hungry! Food is such a huge part of our culture here in ${buddy.country}. What is your go-to comfort meal when you want something delicious?`,
-      translation: `¡Ahora me estás dando hambre! La comida es una parte enorme de nuestra cultura aquí en ${buddy.country}. ¿Cuál es tu comida reconfortante favorita cuando quieres algo delicioso?`,
+      text: `Now you are making me hungry! Food is such a huge part of Mexican culture—from street tacos al pastor to warm churros. What is your favorite dish when you want something delicious?`,
+      translation: `¡Ahora me estás dando hambre! La comida es una parte enorme de la cultura mexicana, desde tacos al pastor hasta churros calientes. ¿Cuál es tu platillo favorito cuando quieres algo delicioso?`,
     };
   }
 
-  // 6. Weekend / Hobbies / Books / Travel
-  if (
-    lower.includes('fin de semana') ||
-    lower.includes('sabado') ||
-    lower.includes('domingo') ||
-    lower.includes('viajar') ||
-    lower.includes('libro') ||
-    lower.includes('pelicula') ||
-    lower.includes('parque')
-  ) {
-    return {
-      text: `That sounds like a wonderful way to recharge. It takes courage to practice conversational Spanish after a long day, so kudos to you for showing up!`,
-      translation: `Eso suena como una maravillosa forma de recargar energías. Se necesita valentía para practicar español conversacional después de un largo día, ¡así que felicitaciones por estar aquí!`,
-    };
-  }
-
-  // 7. General Friendly Fallback
+  // 5. General Friendly Fallback
   return {
-    text: `¡Muchas gracias! Your Spanish sentence came across clearly and naturally. Keep this momentum going—practicing a little bit every single day really adds up fast!`,
-    translation: `¡Muchas gracias! Tu frase en español se entendió clara y naturalmente. ¡Mantén este ritmo; practicar un poquito cada día realmente suma rápido!`,
+    text: `That was communicated so clearly and naturally! In our exchange, practicing a few spoken sentences every single day builds lasting conversational confidence. What else are you planning today?`,
+    translation: `¡Eso se comunicó de forma tan clara y natural! En nuestro intercambio, practicar unas cuantas frases habladas cada día construye confianza conversacional duradera. ¿Qué más tienes planeado hoy?`,
   };
 }
 
