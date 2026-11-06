@@ -1,0 +1,6 @@
+{
+  "name": "Duo Pals - Conversational Language Buddy",
+  "description": "Daily conversational language exchange with a simulated reciprocal buddy, instant translation notes, streaks, and mini conversation challenges.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
