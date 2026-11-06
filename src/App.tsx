@@ -64,6 +64,7 @@ export default function App() {
   });
 
   // 4. UI States
+  const [autoSpeakReplies, setAutoSpeakReplies] = useState(true);
   const [isBuddyTyping, setIsBuddyTyping] = useState(false);
   const [starterIndex, setStarterIndex] = useState(0);
   const [activeChallenge, setActiveChallenge] = useState<ChallengeType>(null);
@@ -83,7 +84,7 @@ export default function App() {
       id: String(Date.now()),
       type: 'info',
       title: `Switched to ${newBuddy.name}`,
-      message: `Practicing with ${newBuddy.name} in ${newBuddy.city}, ${newBuddy.country}!`,
+      message: `Practicing verbally with ${newBuddy.name} in ${newBuddy.city}, ${newBuddy.country}!`,
     });
   };
 
@@ -110,20 +111,20 @@ export default function App() {
         id: String(Date.now()),
         type: 'streak',
         title: '🔥 Streak Extended!',
-        message: `Your daily conversation is logged. Streak is now ${result.newState.currentStreak} days!`,
+        message: `Your verbal conversation is logged. Streak is now ${result.newState.currentStreak} days!`,
       });
     } else {
       setToast({
         id: String(Date.now()),
         type: 'success',
         title: 'Activity Recorded',
-        message: 'Your practice is saved! Daily goal is already safe.',
+        message: 'Your verbal practice is saved! Daily goal is already safe.',
       });
     }
   };
 
   // Sending a chat message
-  const handleSendMessage = (userText: string) => {
+  const handleSendMessage = (userText: string, isVoice?: boolean) => {
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // 1. Create User Message
@@ -135,6 +136,7 @@ export default function App() {
       language: 'es',
       translation: `Demo translation · your buddy can help you polish it: "${userText}"`,
       timestamp,
+      isSpokenVoice: isVoice,
     };
 
     const currentMessages = messagesByBuddy[currentBuddy.id] || [];
@@ -165,6 +167,7 @@ export default function App() {
       setIsBuddyTyping(false);
     }, 700);
   };
+
 
   // Completing Drama Challenge
   const handleCompleteDrama = (summaryMessage: string) => {
@@ -315,11 +318,14 @@ export default function App() {
       <section className="bg-stone-100/60 border-b border-stone-200/70 py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
-              Practice with a person. Keep the conversation going.
+            <h1 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight flex items-center gap-2 flex-wrap">
+              <span>Practice verbally with a person. Speak aloud.</span>
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                🎙️ Verbal Voice Active
+              </span>
             </h1>
             <p className="text-xs sm:text-sm text-stone-600 mt-0.5 max-w-2xl">
-              Break the speaking freeze with reciprocal exchange: You practice <strong className="text-stone-900 font-semibold">Spanish</strong>, your partner practices <strong className="text-stone-900 font-semibold">English</strong>, with low-pressure challenges and daily streaks.
+              Break the speaking freeze verbally: Speak <strong className="text-stone-900 font-semibold">Spanish</strong> into your microphone, get real-time speech transcription, hear native pronunciation, and play three voice-activated interactive challenges!
             </p>
           </div>
 
@@ -379,6 +385,8 @@ export default function App() {
               isBuddyTyping={isBuddyTyping}
               starterIndex={starterIndex}
               onCycleStarter={() => setStarterIndex((prev) => prev + 1)}
+              autoSpeakReplies={autoSpeakReplies}
+              onToggleAutoSpeak={() => setAutoSpeakReplies((prev) => !prev)}
             />
           </section>
 

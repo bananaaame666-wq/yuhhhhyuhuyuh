@@ -25,6 +25,7 @@ export interface ChatMessage {
   timestamp: string;
   isChallengeResult?: boolean;
   challengeTitle?: string;
+  isSpokenVoice?: boolean;
 }
 
 export interface StreakState {
@@ -57,6 +58,8 @@ export interface EscapeClue {
   clueSpanish: string;
   hint: string;
   question: string;
+  targetVoiceCommandSpanish: string;
+  alternateKeywords: string[];
   options: {
     id: string;
     text: string;

@@ -361,6 +361,8 @@ export const ESCAPE_ROOM_CLUES: EscapeClue[] = [
     clueSpanish: '«Para desbloquear el primer candado, busca el libro azul que descansa justo debajo del reloj antiguo de madera en la pared norte.»',
     hint: 'Notice key vocabulary: "libro azul" (blue book) and "reloj antiguo de madera" (antique wooden clock).',
     question: 'Where is the hidden key mechanism?',
+    targetVoiceCommandSpanish: 'Buscar el libro azul debajo del reloj',
+    alternateKeywords: ['libro azul', 'reloj', 'azul', 'debajo del reloj'],
     options: [
       {
         id: 'clue1-correct',
@@ -388,6 +390,8 @@ export const ESCAPE_ROOM_CLUES: EscapeClue[] = [
     clueSpanish: '«Gira la pequeña estatua del búho hacia el norte exactamente tres veces hasta escuchar un chasquido suave.»',
     hint: '"Estatua del búho" means owl statue, and "tres veces" means three times.',
     question: 'What physical action must you take to open the stone bookcase?',
+    targetVoiceCommandSpanish: 'Girar la estatua del búho tres veces',
+    alternateKeywords: ['girar', 'buho', 'estatua', 'tres veces', 'norte'],
     options: [
       {
         id: 'clue2-correct',
@@ -415,6 +419,8 @@ export const ESCAPE_ROOM_CLUES: EscapeClue[] = [
     clueSpanish: '«Introduce la palabra secreta: "LIBERTAD" en el panel luminoso para desactivar la alarma final y abrir la gran puerta.»',
     hint: '"Palabra secreta" is secret word, and "panel luminoso" is the illuminated keypad.',
     question: 'How do you bypass the final security threshold?',
+    targetVoiceCommandSpanish: 'LIBERTAD',
+    alternateKeywords: ['libertad', 'palabra libertad', 'codigo libertad'],
     options: [
       {
         id: 'clue3-correct',
