@@ -414,24 +414,30 @@ export default function App() {
         </div>
       </main>
 
-      {/* Modals for Challenges */}
-      <DramaModal
-        isOpen={activeChallenge === 'drama'}
-        onClose={() => setActiveChallenge(null)}
-        onComplete={handleCompleteDrama}
-      />
+      {/* Modals for Challenges - conditionally rendered so onClose instantly removes them */}
+      {activeChallenge === 'drama' && (
+        <DramaModal
+          isOpen={true}
+          onClose={() => setActiveChallenge(null)}
+          onComplete={handleCompleteDrama}
+        />
+      )}
 
-      <EscapeRoomModal
-        isOpen={activeChallenge === 'escape'}
-        onClose={() => setActiveChallenge(null)}
-        onComplete={handleCompleteEscape}
-      />
+      {activeChallenge === 'escape' && (
+        <EscapeRoomModal
+          isOpen={true}
+          onClose={() => setActiveChallenge(null)}
+          onComplete={handleCompleteEscape}
+        />
+      )}
 
-      <ImprovModal
-        isOpen={activeChallenge === 'improv'}
-        onClose={() => setActiveChallenge(null)}
-        onComplete={handleCompleteImprov}
-      />
+      {activeChallenge === 'improv' && (
+        <ImprovModal
+          isOpen={true}
+          onClose={() => setActiveChallenge(null)}
+          onComplete={handleCompleteImprov}
+        />
+      )}
 
       {/* Toast Notification */}
       <Toast toast={toast} onDismiss={() => setToast(null)} />

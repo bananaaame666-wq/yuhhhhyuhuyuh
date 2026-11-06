@@ -146,8 +146,15 @@ export const BuddyCard: React.FC<BuddyCardProps> = ({
                 </p>
               </div>
               <button
-                onClick={() => setShowSwitchModal(false)}
-                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowSwitchModal(false);
+                }}
+                className="w-10 h-10 rounded-xl text-stone-400 hover:text-stone-800 hover:bg-stone-100 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                title="Close modal (Esc)"
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>

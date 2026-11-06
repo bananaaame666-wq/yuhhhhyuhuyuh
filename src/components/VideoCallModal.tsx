@@ -24,6 +24,7 @@ import {
   ChevronRight,
   HelpCircle,
   Users,
+  X,
 } from 'lucide-react';
 
 interface VideoCallModalProps {
@@ -333,6 +334,7 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={() => setShowCaptions((prev) => !prev)}
               className={`p-2 rounded-full border transition-all cursor-pointer backdrop-blur-md ${
                 showCaptions
@@ -342,6 +344,19 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
               title="Toggle Live Subtitles (CC)"
             >
               <Captions className="w-4 h-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleHangup();
+              }}
+              className="w-9 h-9 rounded-full bg-stone-900/90 hover:bg-rose-600 text-stone-300 hover:text-white border border-stone-700 transition-colors flex items-center justify-center cursor-pointer backdrop-blur-md"
+              title="Close call (Esc)"
+              aria-label="Close call"
+            >
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>

@@ -50,8 +50,15 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
         </div>
 
         <button
-          onClick={onDismiss}
-          className="text-stone-400 hover:text-white p-1 rounded-lg transition-colors shrink-0"
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDismiss();
+          }}
+          className="text-stone-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-lg transition-colors shrink-0 cursor-pointer"
+          title="Dismiss toast"
+          aria-label="Dismiss toast"
         >
           <X className="w-4 h-4" />
         </button>

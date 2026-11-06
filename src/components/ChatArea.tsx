@@ -18,6 +18,7 @@ import {
   MicOff,
   Info,
   Radio,
+  X,
 } from 'lucide-react';
 
 interface ChatAreaProps {
@@ -485,13 +486,18 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           {inputText && (
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 setInputText('');
                 setInterimTranscript('');
+                inputRef.current?.focus();
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-xs px-1 cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-600 hover:text-stone-900 flex items-center justify-center transition-colors cursor-pointer"
+              title="Clear input"
+              aria-label="Clear input"
             >
-              Clear
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>

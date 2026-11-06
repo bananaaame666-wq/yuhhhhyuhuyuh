@@ -79,10 +79,18 @@ export const EscapeRoomModal: React.FC<EscapeRoomModalProps> = ({
   }, [isOpen]);
 
   const handleModalClose = () => {
-    speechListenerRef.current?.stop();
-    stopSpeaking();
-    setIsListening(false);
     onClose();
+    setIsListening(false);
+    try {
+      speechListenerRef.current?.stop();
+    } catch (err) {
+      console.warn('Speech stop error:', err);
+    }
+    try {
+      stopSpeaking();
+    } catch (err) {
+      console.warn('SpeechSynthesis stop error:', err);
+    }
   };
 
   const currentClue = ESCAPE_ROOM_CLUES[currentClueIndex];
@@ -291,9 +299,15 @@ export const EscapeRoomModal: React.FC<EscapeRoomModalProps> = ({
             </div>
           </div>
           <button
-            onClick={handleModalClose}
-            className="p-1 rounded-lg text-amber-300 hover:text-white hover:bg-amber-900 transition-colors cursor-pointer"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleModalClose();
+            }}
+            className="w-10 h-10 rounded-xl text-amber-200 hover:text-white hover:bg-amber-900 transition-colors flex items-center justify-center cursor-pointer shrink-0"
             title="Close modal (Esc)"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
